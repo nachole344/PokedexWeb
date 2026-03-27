@@ -65,11 +65,7 @@ a {
     margin-top: 5px;
 }
 
-#showMorePokesButton {
-    width: 300px;
-}
-
-#showMoreItemsButton {
+#showMorePokesButton, #showMoreItemsButton {
     width: 300px;
 }
 
@@ -78,16 +74,15 @@ a {
     min-height: auto;
 }
 
-#pokeCard {
+#pokeCard, #itemCard, #locCard {
     text-align: center;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-#itemCard {
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
+#locCard:hover {
+    transform: scale(1.05);
+    transition: transform 0.5s;
 }
 
 #typeIMG {

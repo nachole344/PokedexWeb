@@ -10,12 +10,12 @@ async function showPokemon() {
             break
         }
 
-        let shinnyProb = Math.floor(Math.random() * (4096)) // Calcular probabilidad de Pokemon Shinny
+        let shinyProb = Math.floor(Math.random() * (4096)) // Calcular probabilidad de Pokemon Shinny
 
         const URL = `https://pokeapi.co/api/v2/pokemon/${i}`
 
         console.log(URL)
-        console.log(shinnyProb)
+        console.log(shinyProb)
 
         await fetch(URL)
             .then(response => {
@@ -31,7 +31,7 @@ async function showPokemon() {
 
                 let pokeImage
 
-                if (shinnyProb == 1000) {
+                if (shinyProb == 1000) {
 
                     pokeImage = data.sprites.front_shiny
                     shinnyAudio.play()
@@ -111,7 +111,7 @@ function searchPokemon() {
 
     const URL = `https://pokeapi.co/api/v2/pokemon/${search}`
 
-    let shinnyProb = Math.floor(Math.random() * (4096)) // Calcular probabilidad de Pokemon Shinny
+    let shinyProb = Math.floor(Math.random() * (4096)) // Calcular probabilidad de Pokemon Shinny
 
     console.log(search)
     console.log(URL)
@@ -142,7 +142,7 @@ function searchPokemon() {
                 fetch(randomForm.url).then(formResponse => formResponse.json()).then(formData => {
 
 
-                    if (shinnyProb == 1000) {
+                    if (shinyProb == 1000) {
 
                         pokeImage = formData.sprites.front_shiny
                         shinnyAudio.play()
@@ -158,7 +158,7 @@ function searchPokemon() {
 
             } else {
 
-                if (shinnyProb == 67) {
+                if (shinyProb == 1000) {
 
                     pokeImage = data.sprites.front_shiny
 
@@ -170,7 +170,7 @@ function searchPokemon() {
             }
 
             document.getElementById("pokeCardContainer").innerHTML = `
-                <div class="col-md-4 col-12" id="pokeCard">
+                <div class="col-md-6 col-12" id="pokeCard">
                     <div class="card mx-auto">
                         <div class="card-body">
                             <h3 class="card-title" id="pokeName">${pokeName}</h3>
