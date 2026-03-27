@@ -115,7 +115,7 @@ function searchPokemon() {
 
     console.log(search)
     console.log(URL)
-    console.log(shinnyProb)
+    console.log(shinyProb)
 
     fetch(URL)
         .then(response => {

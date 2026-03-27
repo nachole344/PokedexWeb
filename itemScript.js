@@ -83,6 +83,11 @@ function searchItem() {
     }
 
     const search = document.getElementById("search").value.toLowerCase()
+
+    let search_array = search.split(" ")
+
+    search = search_array.join("-")
+    
     const URL = `https://pokeapi.co/api/v2/item/${search}`
 
     console.log(search)
