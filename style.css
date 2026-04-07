@@ -49,6 +49,12 @@ a {
     text-decoration: none;
 }
 
+progress {
+    width: 100%;
+    accent-color: hsl(200, 90%, 45%);
+    transition: accent-color 0.3s;
+}
+
 #searchCard {
     margin-top: 5px;
     margin-bottom: 5px;
@@ -69,6 +75,10 @@ a {
     width: 300px;
 }
 
+#showDescButton {
+    margin-bottom: 15px;
+}
+
 #mainCard {
     padding: 10px;
     min-height: auto;
@@ -78,6 +88,7 @@ a {
     text-align: center;
     margin-top: 10px;
     margin-bottom: 10px;
+    padding: 10px;
 }
 
 #locCard:hover {
@@ -85,9 +96,18 @@ a {
     transition: transform 0.5s;
 }
 
+#pokeCardHeader, #pokeCardBody {
+    padding: 10px;
+}
+
 #typeIMG {
     width: 150px;
-    margin: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#statsContainer{
+    text-align: left;
 }
 
 .gameName {

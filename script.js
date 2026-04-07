@@ -51,7 +51,7 @@ async function showPokemon() {
                         <div class="card mx-auto">
                             <div class="card-body">
                                 <h3 class="card-title" id="pokeName">${pokeName}</h3>
-                                <img src="${pokeImage}" id="pokeImage" width="300px">
+                                <img src="${pokeImage}" id="pokeImage" width="300px"><br>
                                 <audio controls src="${pokeCry}"></audio>
                                 <p class="card-text" id="pokeID"><strong>Pokedex nº</strong>${pokeID}</p>
                                 <p class="card-text" id="pokeType"><strong>Types:</strong></p>
@@ -74,7 +74,7 @@ async function showPokemon() {
                     <img src="TypesIMG/${pokeType2}.png" id=typeIMG>`
                 }
 
-                
+
 
             })
 
@@ -104,7 +104,7 @@ function searchPokemon() {
     }
 
     let search = document.getElementById("search").value.toLowerCase()
-    
+
     let search_array = search.split(" ")
 
     search = search_array.join("-")
@@ -169,21 +169,34 @@ function searchPokemon() {
                 }
             }
 
+            let pokeHeight = data.height / 10
+            let pokeWeight = data.weight / 10
+
             document.getElementById("pokeCardContainer").innerHTML = `
-                <div class="col-md-6 col-12" id="pokeCard">
+                <div class="col-md-11 col-12" id="pokeCard">
                     <div class="card mx-auto">
-                        <div class="card-body">
+                        <div class="row" id="pokeCardHeader">
                             <h3 class="card-title" id="pokeName">${pokeName}</h3>
-                            <img src="${pokeImage}" id="pokeImage" width="300px">
-                            <audio controls src="${pokeCry}"></audio>
-                            <p class="card-text" id="pokeID"><strong>Pokedex nº</strong>${pokeID}</p>
-                            <p class?"card-text" id="dexEntry"></p>
-                            <button onclick="showDesc()" id="showDescButton">Show Pokedex Entry</button>
-                            <p><strong>Game Appearances:</strong></p>
-                            <div id="gameList">
+                        </div>
+                        <div class="row" id="pokeCardBody">
+                            <div class="col-md-6 col-12">
+                                <img src="${pokeImage}" id="pokeImage" width="300px"><br>
+                                <audio controls src="${pokeCry}"></audio>
+                                <p class="card-text" id="pokeID"><strong>Pokedex nº</strong>${pokeID}</p>
+                                <p class="card-text" id="dexEntry"></p>
+                                <button onclick="showDesc()" id="showDescButton">Show Pokedex Entry</button>
+                                <p><strong>Game Appearances:</strong></p>
+                                <div id="gameList">
+                                </div>
+                                <p class="card-text" id="pokeType"><strong>Types:</strong></p>
+                                <div id="typeIMGcontainer">
+                                </div>
                             </div>
-                            <p class="card-text" id="pokeType"><strong>Types:</strong></p>
-                            <div id="typeIMGcontainer">
+                            <div class="col-md-6 col-12">
+                                <p><strong>Height: </strong>${pokeHeight} m</p>
+                                <p><strong>Weight: </strong>${pokeWeight} Kg</p>
+                                <div id="statsContainer">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -204,11 +217,46 @@ function searchPokemon() {
 
             const games = data.game_indices.map(g => g.version.name)
 
-            for (let i = 0; i < games.length; i++){
+            for (let i = 0; i < games.length; i++) {
                 let currentGame = games[i].toUpperCase()
                 document.getElementById("gameList").innerHTML += `
                     <label id="pokemon${currentGame}" class="gameName"><strong>${currentGame}</strong> </label>
                 `
+            }
+            
+            const stats = data.stats
+            let statsHTML = ""
+
+            for (let i = 0; i < stats.length; i++) {
+                let currentStatName = stats[i].stat.name
+                let currentStatValue = stats[i].base_stat
+
+                let percentage = (currentStatValue / 255) * 100
+
+                statsHTML += `
+                    <div class="stat-item mb-2">
+                        <div class="d-flex justify-content-between">
+                            <strong>${currentStatName.toUpperCase()}</strong>
+                            <span>${currentStatValue}</span>
+                        </div>
+                        <div class="progress" style="height: 12px; background-color: #333;">
+                            <div id="${currentStatName}Stat" 
+                                class="progress-bar" 
+                                role="progressbar" 
+                                style="width: ${percentage}%" 
+                                aria-valuenow="${currentStatValue}" 
+                                aria-valuemin="0" 
+                                aria-valuemax="255">
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+
+            document.getElementById("statsContainer").innerHTML = statsHTML
+
+            for (let i = 0; i < stats.length; i++) {
+                updateStatBarColor(stats[i].base_stat, stats[i].stat.name)
             }
 
             lastSearchedPokeSpecie = data.species.name
@@ -223,9 +271,9 @@ function searchPokemon() {
 
 }
 
-function showDesc(){
+function showDesc() {
 
-    if (document.getElementById("showDescButton") != null){
+    if (document.getElementById("showDescButton") != null) {
         document.getElementById("showDescButton").remove()
     }
 
@@ -246,7 +294,7 @@ function showDesc(){
 
             const entries = data.flavor_text_entries.map(e => e)
 
-            for (let i = entries.length - 1; i >= 0;i--){ // Recorre todas las entradas de la pokedex del pokemon hasta encontrar la entrada en inglés más reciente
+            for (let i = entries.length - 1; i >= 0; i--) { // Recorre todas las entradas de la pokedex del pokemon hasta encontrar la entrada en inglés más reciente
 
                 let currentEntry = entries[i].flavor_text
                 let currentLang = entries[i].language.name
@@ -266,4 +314,19 @@ function showDesc(){
             console.error("Error:", error)
         })
 
+}
+
+function updateStatBarColor(value, statId) {
+    const barId = `${statId}Stat`
+    const statBar = document.getElementById(barId)
+
+    const maxHue = 175
+    
+    if (statBar) {
+        let hue = Math.min(value * maxHue/255, maxHue); 
+        
+        statBar.style.backgroundColor = `hsl(${hue}, 90%, 45%)`
+        
+        statBar.style.boxShadow = `0 0 5px hsl(${hue}, 90%, 60%)`
+    }
 }
