@@ -1,10 +1,12 @@
 var indexSum = 0
 var lastSearchedPokeSpecie;
+var imageSelection = "sprites"
 const shinnyAudio = new Audio("Sounds/shiny-pokemon.mp3")
 
 async function showPokemon() {
 
     for (let i = 1 + 30 * indexSum; i <= 30 + 30 * indexSum; i++) {
+
         if (i > 1025) {
             document.getElementById("showMorePokesButton").remove()
             break
@@ -31,16 +33,34 @@ async function showPokemon() {
 
                 let pokeImage
 
-                if (shinyProb == 1000) {
+                if (imageSelection == "sprites") {
 
-                    pokeImage = data.sprites.front_shiny
-                    shinnyAudio.play()
+                    if (shinyProb == 1000) {
 
-                } else {
+                        pokeImage = data.sprites.front_shiny
+                        shinnyAudio.play()
 
-                    pokeImage = data.sprites.front_default
+                    } else {
+
+                        pokeImage = data.sprites.front_default
+
+                    }
+
+                } else if (imageSelection == "artworks") {
+
+                    if (shinyProb == 1000) {
+
+                        pokeImage = data.sprites.other['official-artwork'].front_shiny
+                        shinnyAudio.play()
+
+                    } else {
+
+                        pokeImage = data.sprites.other['official-artwork'].front_default
+
+                    }
 
                 }
+
 
                 let pokeCry = data.cries.latest
 
@@ -51,7 +71,7 @@ async function showPokemon() {
                         <div class="card mx-auto">
                             <div class="card-body">
                                 <h3 class="card-title" id="pokeName">${pokeName}</h3>
-                                <img src="${pokeImage}" id="pokeImage" width="300px"><br>
+                                <img src="${pokeImage}" id="pokeImage${i}" width="300px"><br>
                                 <audio controls src="${pokeCry}"></audio>
                                 <p class="card-text" id="pokeID"><strong>Pokedex nº</strong>${pokeID}</p>
                                 <p class="card-text" id="pokeType"><strong>Types:</strong></p>
@@ -82,7 +102,6 @@ async function showPokemon() {
                 alert(error.message)
                 console.error("Error:", error)
             })
-
 
     }
 }
@@ -134,13 +153,12 @@ function searchPokemon() {
             let pokeCry = data.cries.latest
 
             let pokeID = data.id
-            if (pokeID == 201) { // Revisa si el pokemon es unown y elige al azar una de sus formas (A - Z, ! y ?)
+            if (pokeID == 201 && imageSelection == "sprites") { // Revisa si el pokemon es unown y elige al azar una de sus formas (A - Z, ! y ?) si estan los sprites seleccionados
 
                 let forms = data.forms
                 let formsLen = forms.length
                 let randomForm = forms[Math.floor(Math.random() * formsLen)]
                 fetch(randomForm.url).then(formResponse => formResponse.json()).then(formData => {
-
 
                     if (shinyProb == 1000) {
 
@@ -154,17 +172,37 @@ function searchPokemon() {
                     }
 
                     document.getElementById("pokeImage").src = pokeImage
+
                 })
 
             } else {
 
-                if (shinyProb == 1000) {
 
-                    pokeImage = data.sprites.front_shiny
+                if (imageSelection == "sprites") {
 
-                } else {
+                    if (shinyProb == 1000) {
 
-                    pokeImage = data.sprites.front_default
+                        pokeImage = data.sprites.front_shiny
+                        shinnyAudio.play()
+
+                    } else {
+
+                        pokeImage = data.sprites.front_default
+
+                    }
+
+                } else if (imageSelection == "artworks") {
+
+                    if (shinyProb == 1000) {
+
+                        pokeImage = data.sprites.other['official-artwork'].front_shiny
+                        shinnyAudio.play()
+
+                    } else {
+
+                        pokeImage = data.sprites.other['official-artwork'].front_default
+
+                    }
 
                 }
             }
@@ -223,7 +261,7 @@ function searchPokemon() {
                     <label id="pokemon${currentGame}" class="gameName"><strong>${currentGame}</strong> </label>
                 `
             }
-            
+
             const stats = data.stats
             let statsHTML = ""
 
@@ -321,12 +359,175 @@ function updateStatBarColor(value, statId) {
     const statBar = document.getElementById(barId)
 
     const maxHue = 175
-    
+
     if (statBar) {
-        let hue = Math.min(value * maxHue/255, maxHue); 
-        
+        let hue = Math.min(value * maxHue / 255, maxHue);
+
         statBar.style.backgroundColor = `hsl(${hue}, 90%, 45%)`
-        
+
         statBar.style.boxShadow = `0 0 5px hsl(${hue}, 90%, 60%)`
     }
+}
+
+async function updateImages() {
+
+    imageSelection = document.getElementById("artworkSelect").value
+
+    if (document.getElementById("pokeImage") != null) { // Hay sólo 1 pokemon (se ha buscado)
+
+        let currentSearch = document.getElementById("pokeName").innerHTML.toLowerCase()
+
+        const URL = `https://pokeapi.co/api/v2/pokemon/${currentSearch}`
+
+        let shinyProb = Math.floor(Math.random() * (4096))
+
+        console.log(URL)
+        console.log(shinyProb)
+
+        fetch(URL)
+            .then(response => {
+
+                if (!response.ok) throw new Error("Pokemon not found")
+
+                return response.json()
+            })
+
+            .then(data => {
+
+                let pokeImage;
+
+                let pokeID = data.id
+                if (pokeID == 201 && imageSelection == "sprites") { // Revisa si el pokemon es unown y elige al azar una de sus formas (A - Z, ! y ?) si estan los sprites seleccionados
+
+                    let forms = data.forms
+                    let formsLen = forms.length
+                    let randomForm = forms[Math.floor(Math.random() * formsLen)]
+                    fetch(randomForm.url).then(formResponse => formResponse.json()).then(formData => {
+
+                        if (shinyProb == 1000) {
+
+                            pokeImage = formData.sprites.front_shiny
+                            shinnyAudio.play()
+
+                        } else {
+
+                            pokeImage = formData.sprites.front_default
+
+                        }
+
+                        document.getElementById("pokeImage").src = pokeImage
+
+                    })
+
+
+                } else {
+
+
+                    if (imageSelection == "sprites") {
+
+                        if (shinyProb == 1000) {
+
+                            pokeImage = data.sprites.front_shiny
+                            shinnyAudio.play()
+
+                        } else {
+
+                            pokeImage = data.sprites.front_default
+
+                        }
+
+                    } else if (imageSelection == "artworks") {
+
+                        if (shinyProb == 1000) {
+
+                            pokeImage = data.sprites.other['official-artwork'].front_shiny
+                            shinnyAudio.play()
+
+                        } else {
+
+                            pokeImage = data.sprites.other['official-artwork'].front_default
+
+                        }
+
+                    }
+
+                    document.getElementById("pokeImage").src = pokeImage
+
+                }
+
+            })
+
+            .catch(error => {
+                alert(error.message)
+                console.error("Error:", error)
+            })
+
+    } else { // Hay más de 1 pokemon (Se está en la vista de cuadrícula)
+
+        for (let i = 1; i <= 30 + 30 * indexSum; i++) {
+
+            if (i > 1025) {
+                break
+            }
+
+            let shinyProb = Math.floor(Math.random() * (4096)) // Calcular probabilidad de Pokemon Shinny
+
+            const URL = `https://pokeapi.co/api/v2/pokemon/${i}`
+
+            console.log(URL)
+            console.log(shinyProb)
+
+            await fetch(URL)
+                .then(response => {
+
+                    if (!response.ok) throw new Error("Pokemon not found")
+
+                    return response.json()
+                })
+
+                .then(data => {
+
+                    let pokeImage
+
+
+                    if (imageSelection == "sprites") {
+
+                        if (shinyProb == 1000) {
+
+                            pokeImage = data.sprites.front_shiny
+                            shinnyAudio.play()
+
+                        } else {
+
+                            pokeImage = data.sprites.front_default
+
+                        }
+
+                    } else if (imageSelection == "artworks") {
+
+                        if (shinyProb == 1000) {
+
+                            pokeImage = data.sprites.other['official-artwork'].front_shiny
+                            shinnyAudio.play()
+
+                        } else {
+
+                            pokeImage = data.sprites.other['official-artwork'].front_default
+
+                        }
+
+                    }
+
+                    document.getElementById(`pokeImage${i}`).src = pokeImage
+
+                })
+
+                .catch(error => {
+                    alert(error.message)
+                    console.error("Error:", error)
+                })
+        }
+
+    }
+
 }
