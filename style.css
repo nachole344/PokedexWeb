@@ -100,6 +100,10 @@ progress {
     padding: 10px;
 }
 
+#itemCard .card-body {
+    min-height: 310px;
+}
+
 #locCard:hover {
     transform: scale(1.05);
     transition: transform 0.5s;
@@ -117,6 +121,10 @@ progress {
 
 #statsContainer{
     text-align: left;
+}
+
+#extraInfo{
+    align-content: center;
 }
 
 .gameName {

@@ -113,7 +113,18 @@ function showMorePokes() {
 
 }
 
-function searchPokemon() {
+function searchButton(search) {
+
+    let searchArray = search.value.split(" ")
+
+    search = searchArray.join("-")
+
+    searchPokemon(search)
+
+}
+
+function searchPokemon(search) {
+    
     document.getElementById("pokeCardContainer").innerHTML = ""
 
     if (document.getElementById("showMorePokesButton") != null) {
@@ -121,12 +132,6 @@ function searchPokemon() {
         document.getElementById("showMorePokesButton").remove()
 
     }
-
-    let search = document.getElementById("search").value.toLowerCase()
-
-    let search_array = search.split(" ")
-
-    search = search_array.join("-")
 
     const URL = `https://pokeapi.co/api/v2/pokemon/${search}`
 
@@ -207,6 +212,7 @@ function searchPokemon() {
                 }
             }
 
+            // La altura está en decimetros (dm) y el peso está en hectogramos (hg)
             let pokeHeight = data.height / 10
             let pokeWeight = data.weight / 10
 
@@ -230,7 +236,11 @@ function searchPokemon() {
                                 <div id="typeIMGcontainer">
                                 </div>
                             </div>
-                            <div class="col-md-6 col-12">
+                            <div class="col-md-6 col-12" id="extraInfo">
+                                <h5><strong>Abilities</strong></h5>
+                                <div id="abilitiesContainer">
+                                </div>
+                                <h5><strong>Stats</strong></h5>
                                 <p><strong>Height: </strong>${pokeHeight} m</p>
                                 <p><strong>Weight: </strong>${pokeWeight} Kg</p>
                                 <div id="statsContainer">
@@ -295,6 +305,14 @@ function searchPokemon() {
 
             for (let i = 0; i < stats.length; i++) {
                 updateStatBarColor(stats[i].base_stat, stats[i].stat.name)
+            }
+
+            let pokeAbilities = data.abilities.map(a => a.ability)
+            for (let i = 0; i < pokeAbilities.length; i++) {
+                document.getElementById("abilitiesContainer").innerHTML += `
+                    <p><strong>${i + 1}.</strong> ${pokeAbilities[i].name.toUpperCase()}</p>
+                `
+                
             }
 
             lastSearchedPokeSpecie = data.species.name
@@ -529,5 +547,33 @@ async function updateImages() {
         }
 
     }
+
+}
+
+function randomSearch() {
+    
+    fetch('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0')
+        .then(response => {
+
+            if (!response.ok) throw new Error("Pokemon not found")
+
+            return response.json()
+        })
+
+        .then(data => {
+
+        let results = data.results.map(n => n)
+
+        let randomPoke = results[Math.floor(Math.random() * results.length)].name
+
+        searchPokemon(randomPoke)
+        
+        })
+
+        .catch(error => {
+            alert(error.message)
+            console.error("Error:", error)
+        })
+
 
 }

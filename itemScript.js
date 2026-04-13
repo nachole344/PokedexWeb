@@ -66,6 +66,16 @@ async function showItem() {
     }
 }
 
+function searchButton(search) {
+
+    let searchArray = search.value.split(" ")
+
+    search = searchArray.join("-")
+
+    searchPokemon(search)
+
+}
+
 function showMoreItems() {
 
     indexSum++
@@ -73,7 +83,7 @@ function showMoreItems() {
 
 }
 
-function searchItem() {
+function searchItem(search) {
     document.getElementById("itemCardContainer").innerHTML = ""
 
     if (document.getElementById("showMoreItemsButton") != null) {
@@ -81,12 +91,6 @@ function searchItem() {
         document.getElementById("showMoreItemsButton").remove()
 
     }
-
-    const search = document.getElementById("search").value.toLowerCase()
-
-    let search_array = search.split(" ")
-
-    search = search_array.join("-")
     
     const URL = `https://pokeapi.co/api/v2/item/${search}`
 
@@ -134,5 +138,33 @@ function searchItem() {
             alert(error.message)
             console.error("Error:", error)
         })
+
+}
+
+function randomSearch() {
+    
+    fetch('https://pokeapi.co/api/v2/item?limit=100000&offset=0')
+        .then(response => {
+
+            if (!response.ok) throw new Error("Item not found")
+
+            return response.json()
+        })
+
+        .then(data => {
+
+        let results = data.results.map(n => n)
+
+        let randomItem = results[Math.floor(Math.random() * results.length)].name
+
+        searchItem(randomItem)
+        
+        })
+
+        .catch(error => {
+            alert(error.message)
+            console.error("Error:", error)
+        })
+
 
 }
